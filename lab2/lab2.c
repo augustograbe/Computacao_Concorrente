@@ -5,12 +5,28 @@
 //descomentar o define abaixo caso deseje imprimir uma versao truncada da matriz gerada no formato texto
 #define TEXTO 1
 
+#ifndef _CLOCK_TIMER_H
+#define _CLOCK_TIMER_H
+
+#include <sys/time.h>
+#define BILLION 1000000000L
+
+/* The argument now should be a double (not a pointer to a double) */
+#define GET_TIME(now) { \
+   struct timespec time; \
+   clock_gettime(CLOCK_MONOTONIC, &time); \
+   now = time.tv_sec + time.tv_nsec/1000000000.0; \
+}
+#endif
+
 int main(int argc, char*argv[]) {
    float *matriz_1, *matriz_2, *matriz_s; //matrizes que serão carregadas do arquivo, matriz de saída
    int linhas_1, colunas_1, linhas_2, colunas_2, linhas_s, colunas_s; //dimensoes das matrizes
    long long int tam; //qtde de elementos na matriz
    FILE * descritorArquivo; //descritor do arquivo de entrada
    size_t ret; //retorno da funcao de leitura no arquivo de entrada
+
+   double start, finish, elapsed; //variáveis para medida de tempo
    
    //recebe os argumentos de entrada
    if(argc < 4) {
@@ -107,6 +123,8 @@ int main(int argc, char*argv[]) {
             matriz_s[i*colunas_1+j]=0.0;
         }
     }
+
+    GET_TIME(start);
     //------------------multiplicação----------
     //multiplicação da matriz
     for(int i = 0; i < linhas_1; i++) { 
@@ -114,12 +132,11 @@ int main(int argc, char*argv[]) {
             for (int k = 0; k < linhas_2; k++) {
                 matriz_s[i*colunas_1+j] += matriz_1[i*colunas_1+k] * matriz_2[k*colunas_1+j];
             }
-
         }
-    //matriz_s[i*colunas+j] += matriz_1[] * matriz_2[] ;
-      
     }
-
+    GET_TIME(finish);
+    elapsed = finish - start;
+    printf("A multiplicacao da matriz levou %e segundos\n", elapsed);
 
     //-------------------Saida----------
    //imprime a matriz na saida padrao
