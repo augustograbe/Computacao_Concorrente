@@ -6,6 +6,8 @@
 | **Multiplicação** | 0.5980954s | 0.5967036s | 0.6192495s | 0.6046828s |
 | **Final**         | 0.0014480s | 0.0014438s | 0.0012283s | 0.0013733s |
 
+Tempo total sequencial: 0.6078356
+
 ### Matriz 1000x1000
 | | Teste 1 | Teste 2 | Teste 3 | Média |
 |---|---|---|---|---|
