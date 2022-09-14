@@ -26,8 +26,9 @@ int main(int argc, char*argv[]) {
    FILE * descritorArquivo; //descritor do arquivo de entrada
    size_t ret; //retorno da funcao de leitura no arquivo de entrada
 
-   double start, finish, elapsed; //variáveis para medida de tempo
+   double tempo_1, tempo_2, tempo_3, tempo_4; //variáveis para medida de tempo
    
+   GET_TIME(tempo_1);
    //recebe os argumentos de entrada
    if(argc < 4) {
       fprintf(stderr, "Digite: %s <arquivo entrada 1> <arquivo entrada 2> <arquivo saida>\n", argv[0]);
@@ -124,7 +125,7 @@ int main(int argc, char*argv[]) {
         }
     }
 
-    GET_TIME(start);
+    GET_TIME(tempo_2);
     //------------------multiplicação----------
     //multiplicação da matriz
     for(int i = 0; i < linhas_1; i++) { 
@@ -134,9 +135,7 @@ int main(int argc, char*argv[]) {
             }
         }
     }
-    GET_TIME(finish);
-    elapsed = finish - start;
-    printf("A multiplicacao da matriz levou %e segundos\n", elapsed);
+    GET_TIME(tempo_3);
 
     //-------------------Saida----------
    //imprime a matriz na saida padrao
@@ -170,6 +169,10 @@ int main(int argc, char*argv[]) {
    free(matriz_1);
    free(matriz_2);
    free(matriz_s);
+   GET_TIME(tempo_4);
+   printf("A multiplicacao da matriz levou %e segundos\n", tempo_3-tempo_2);
+   printf("O inicio do programa levou %e segundos\n", tempo_2-tempo_1);
+   printf("O final do programa levou %e segundos\n", tempo_4-tempo_3);
    return 0;
 }
 
