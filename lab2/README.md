@@ -10,6 +10,8 @@ Tempo total sequencial: 0.6078356s
 
 Com 4 processadores, a parte paralela gastará p/n = 0.6046828/4 = 0.1511707s
 
+O ganho estimado será S=0.6078356/(0.0031528+0.1511707)=3.938710566
+
 ### Matriz 1000x1000
 | | Teste 1 | Teste 2 | Teste 3 | Média |
 |---|---|---|---|---|
@@ -21,6 +23,8 @@ Tempo total sequencial: 6.7305685s
 
 Com 4 processadores, a parte paralela gastará p/n = 6.719737/4 = 1.67993425s
 
+O ganho estimado será S=6.7305685/(0.0108315+1.67993425)=3.980781193
+
 ### Matriz 2000x2000
 | | Teste 1 | Teste 2 | Teste 3 | Média |
 |---|---|---|---|---|
@@ -31,3 +35,5 @@ Com 4 processadores, a parte paralela gastará p/n = 6.719737/4 = 1.67993425s
 Tempo total sequencial: 59.7680697s
 
 Com 4 processadores, a parte paralela gastará p/n = 59.72976667/4 = 14.93244167s
+
+O ganho estimado será S=59.7680697/(0.038303032+14.93244167)=3.992324423
