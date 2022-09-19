@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #define BILLION 1000000000L
 
-/* The argument now should be a double (not a pointer to a double) */
 #define GET_TIME(now) { \
    struct timespec time; \
    clock_gettime(CLOCK_MONOTONIC, &time); \
@@ -21,24 +20,19 @@
 #endif
 
 float *matriz_1, *matriz_2, *matriz_s; //matrizes de entrada e de saída
+int linhas_1, colunas_1, linhas_2, colunas_2; //dimensoes das matrizes
 int nthreads; //numerdo de threads
 
-typedef struct{
-   int id; //identificador da thread que irá processar
-   int linhas_1; //dimensões das matrizes
-   int linhas_2; 
-   int colunas_1;
-   int colunas_2;
-} tArgs;
-
 void * mult_matriz(void *arg) {
-   tArgs *args = (tArgs*) arg;
-   printf("Thread %d\n", args->id);
-   int tlinhas = args->linhas_1/nthreads;
-   for(int i = tlinhas*args->id; i < tlinhas*args->id + tlinhas; i++) { 
-      for(int j = 0; j<  args->colunas_2; j++){
-         for (int k = 0; k < args->linhas_2; k++) {
-               matriz_s[i*args->colunas_1+j] += matriz_1[i*args->colunas_1+k] * matriz_2[k*args->colunas_1+j];
+   int id = (int) arg; //identificador da thread
+   printf("Thread %d\n", id);
+   int bloco = linhas_1/nthreads; //tamanho do bloco de cada thread 
+   int inicio = bloco * args->id; //elemento inicial do bloco da thread
+   int fim = inicio + bloco; //elemento final do bloco da thread
+   for(int i = inicio; i < fim; i++) {  
+      for(int j = 0; j< colunas_2; j++){
+         for (int k = 0; k < linhas_2; k++) {
+               matriz_s[i*colunas_1+j] += matriz_1[i*colunas_1+k] * matriz_2[k*colunas_1+j]; //multiplicação matrizes
          }
       }
     }
@@ -47,12 +41,11 @@ void * mult_matriz(void *arg) {
 
 int main(int argc, char*argv[]) {
    //float *matriz_1, *matriz_2, *matriz_s; //matrizes que serão carregadas do arquivo, matriz de saída
-   int linhas_1, colunas_1, linhas_2, colunas_2, linhas_s, colunas_s; //dimensoes das matrizes
+   //int linhas_1, colunas_1, linhas_2, colunas_2, linhas_s, colunas_s; //dimensoes das matrizes
    long long int tam; //qtde de elementos na matriz
    FILE * descritorArquivo; //descritor do arquivo de entrada
    size_t ret; //retorno da funcao de leitura no arquivo de entrada
    pthread_t *tid;
-   tArgs *args;
 
    double tempo_1, tempo_2, tempo_3, tempo_4; //variáveis para medida de tempo
    
@@ -155,31 +148,26 @@ int main(int argc, char*argv[]) {
 
     GET_TIME(tempo_2);
     //------------------multiplicação concorrente----------
+   tid = (pthread_t *) malloc(sizeof(pthread_t) * nthreads);
+   if(tid==NULL) {
+      fprintf(stderr, "ERRO--malloc\n");
+      return 2;
+   }
    //cricação das threads
-   for(int i = 0; i<nthreads;i++){
-      (args+i) -> id=i;
-      (args+i) ->linhas_1; //dimensões das matrizes
-      (args+i) ->linhas_2; 
-      (args+i) ->colunas_1;
-      (args+i) ->colunas_2;
-      if(pthread_create(tid+i, NULL, mult_matriz, (void*) (args+i))){
-         puts("Erro--pthread create"); return 3;
+   for(int i=0; i<nthreads; i++) {
+      if(pthread_create(tid+i, NULL, mult_matriz, (void*) i)){
+         fprintf(stderr, "ERRO--pthread_create\n");
+         return 3;
       }
    }
    //espera pelo teminio das threads
-   for (int i = 0; i < nthreads; i++){
-      pthread_join(*(tid+i), NULL);
+   for(int i=0; i<nthreads; i++) {
+      if(pthread_join(*(tid+i), (void**) &retorno)){
+         fprintf(stderr, "ERRO--pthread_join\n");
+         return 3;
+      }
    }
    
-
-    //multiplicação da matriz
-    /*for(int i = 0; i < linhas_1; i++) { 
-        for(int j = 0; j<  colunas_2; j++){
-            for (int k = 0; k < linhas_2; k++) {
-                matriz_s[i*colunas_1+j] += matriz_1[i*colunas_1+k] * matriz_2[k*colunas_1+j];
-            }
-        }
-    }*/
     GET_TIME(tempo_3);
 
     //-------------------Saida----------
