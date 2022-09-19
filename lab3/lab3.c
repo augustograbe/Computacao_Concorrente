@@ -27,7 +27,7 @@ void * mult_matriz(void *arg) {
    int id = (int) arg; //identificador da thread
    printf("Thread %d\n", id);
    int bloco = linhas_1/nthreads; //tamanho do bloco de cada thread 
-   int inicio = bloco * args->id; //elemento inicial do bloco da thread
+   int inicio = bloco * id; //elemento inicial do bloco da thread
    int fim = inicio + bloco; //elemento final do bloco da thread
    for(int i = inicio; i < fim; i++) {  
       for(int j = 0; j< colunas_2; j++){
@@ -162,7 +162,7 @@ int main(int argc, char*argv[]) {
    }
    //espera pelo teminio das threads
    for(int i=0; i<nthreads; i++) {
-      if(pthread_join(*(tid+i), (void**) &retorno)){
+      if(pthread_join(*(tid+i), NULL)){
          fprintf(stderr, "ERRO--pthread_join\n");
          return 3;
       }
@@ -202,7 +202,6 @@ int main(int argc, char*argv[]) {
    free(matriz_1);
    free(matriz_2);
    free(matriz_s);
-   free(args);
    free(tid);
    GET_TIME(tempo_4);
    printf("A multiplicacao da matriz levou %e segundos\n", tempo_3-tempo_2);
