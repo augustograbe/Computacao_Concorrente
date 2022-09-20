@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include <pthread.h>
+#include<pthread.h>
 
 //descomentar o define abaixo caso deseje imprimir uma versao truncada da matriz gerada no formato texto
 #define TEXTO 1
+#define NTHREADS 4
 
 #ifndef _CLOCK_TIMER_H
 #define _CLOCK_TIMER_H
@@ -21,14 +22,16 @@
 
 float *matriz_1, *matriz_2, *matriz_s; //matrizes de entrada e de saída
 int linhas_1, colunas_1, linhas_2, colunas_2; //dimensoes das matrizes
-int nthreads; //numerdo de threads
+int nthreads=NTHREADS; //numerdo de threads
 
 void * mult_matriz(void *arg) {
    int id = (int) arg; //identificador da thread
    printf("Thread %d\n", id);
    int bloco = linhas_1/nthreads; //tamanho do bloco de cada thread 
    int inicio = bloco * id; //elemento inicial do bloco da thread
-   int fim = inicio + bloco; //elemento final do bloco da thread
+   int fim;
+   if(id == nthreads-1) fim = linhas_1;
+   else fim = inicio + bloco; //elemento final do bloco da thread
    for(int i = inicio; i < fim; i++) {  
       for(int j = 0; j< colunas_2; j++){
          for (int k = 0; k < linhas_2; k++) {
